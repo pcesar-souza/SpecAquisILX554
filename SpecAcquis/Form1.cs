@@ -213,6 +213,7 @@ namespace SpecAcquis
                 //plotSignal[chart_x] = Convert.ToDouble(RxString);
                 this.Invoke(new EventHandler(getsRxData));   // Calls another thread to plot the data...  
                 //chart_x++;
+
             }/* else if (Start_Graph && (RxString.Substring(0, 1) == "E"))
             {
                 if (chart_x > channel_End)
