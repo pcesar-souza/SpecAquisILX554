@@ -29,7 +29,7 @@ namespace SpecAcquis
         public Form1()
         {
             InitializeComponent();
-            timerCOM.Enabled = true;
+            timerCOM.Start();
             dIntTime = Convert.ToUInt32(txtBoxITime.Text);
             Scans = Convert.ToUInt32(txtBoxScan.Text);
         }
@@ -53,7 +53,7 @@ namespace SpecAcquis
                 timerPlot.Stop();
                 progressBar1.Value = 0;
                 timerProgress.Start();
-                btAcquisStartStop.ForeColor = Color.Red;
+                btAcquisStartStop.ForeColor = SystemColors.InactiveCaption;
                 btAcquisStartStop.Text = "STOP Acquisition";
                 btAcquisStartStop.Enabled = false;              // false upto receiving all data
                 if (serialPort.IsOpen == true)
@@ -92,6 +92,7 @@ namespace SpecAcquis
             
             if (cmbPortBox1.Items.Count == SerialPort.GetPortNames().Length)    //if port number has changed...
             {
+                //txtBoxReceive.AppendText(SerialPort.GetPortNames().Length.ToString());
                 foreach (string serialname in SerialPort.GetPortNames())        //iterate through the collection to get serial port names available.
                 {
                     if (cmbPortBox1.Items[i++].Equals(serialname) == false)     //tests if the ports changed...
@@ -122,11 +123,7 @@ namespace SpecAcquis
         }                                                                       // End of updateCOMs()
 
 
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            updateCOMs();                                                       // updates COMS as tick goes...
-        }
-
+       
         private void serialcleaner()
         {
             serialPort.ReadExisting();
@@ -140,6 +137,7 @@ namespace SpecAcquis
             return;
         }
 
+        //----------------------------------------------------------------------------------------------------------
         private void btConnect_Click(object sender, EventArgs e)
         {
             if (serialPort.IsOpen == false)
@@ -147,13 +145,14 @@ namespace SpecAcquis
                 try
                 {
                     serialPort.PortName     = cmbPortBox1.Items[cmbPortBox1.SelectedIndex].ToString();
-                    serialPort.BaudRate     = 19200;
+                    serialPort.BaudRate     = 28800;
                     serialPort.Parity       = Parity.None;
                     serialPort.StopBits     = StopBits.One;
                     serialPort.DataBits     = 8;
                     serialPort.Handshake    = Handshake.None;
                     serialPort.RtsEnable    = true;
                     serialPort.Open();
+                    serialcleaner();                                                
                     pictureBox1.Image = SpecAcquis.Properties.Resources.on_img;
                 }
                 catch
@@ -384,14 +383,17 @@ namespace SpecAcquis
              {
                 plotSignal[i] = Double.Parse(tempStrings[i/*-IdxRecBuff]*/]);
                 chart1.Series["Series1"].Points.AddXY(i,plotSignal[i] /*chart_y*/);
-                txtBoxReceive.AppendText("i = " + i.ToString() + ' ' + tempStrings[i] + '\n');
+                //txtBoxReceive.AppendText("i = " + i.ToString() + ' ' + tempStrings[i] + '\n');
              }
 
             Array.Clear(rxBuffer, 0, rxBuffer.Length); 
             serialcleaner();
 
             timerPlot.Stop();
+
             btAcquisStartStop.Enabled = true;              // enable after receiving all data
+            btAcquisStartStop.Text = "START Acquisition";
+            btAcquisStartStop.ForeColor = SystemColors.Highlight;
         }
 
         private void timerSerial_Tick(object sender, EventArgs e)
@@ -470,7 +472,7 @@ namespace SpecAcquis
                     string s = System.Text.Encoding.UTF8.GetString(rxBuffer, 0, rxBuffer.Length);
                     if (s.IndexOf("E") != -1)
                     {
-                        txtBoxReceive.AppendText(" Index <" + IdxRecBuff.ToString() + "> \n\n\n" + s.IndexOf("E"));
+                        //txtBoxReceive.AppendText(" Index <" + IdxRecBuff.ToString() + "> \n\n\n" + s.IndexOf("E"));
                         timerSerialData.Stop();
                         timerPlot.Start();
                     }
