@@ -54,8 +54,6 @@
             this.errorProvider2 = new System.Windows.Forms.ErrorProvider(this.components);
             this.errorProvider3 = new System.Windows.Forms.ErrorProvider(this.components);
             this.errorProvider4 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.timerProgress = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -63,7 +61,9 @@
             this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel5 = new System.Windows.Forms.ToolStripStatusLabel();
             this.timerSerialData = new System.Windows.Forms.Timer(this.components);
-            this.timerPlot = new System.Windows.Forms.Timer(this.components);
+            this.chkBoxRun = new System.Windows.Forms.CheckBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -73,6 +73,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider4)).BeginInit();
             this.statusStrip1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // serialPort
@@ -99,7 +100,7 @@
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(593, 300);
+            this.chart1.Size = new System.Drawing.Size(593, 335);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
             // 
@@ -116,7 +117,7 @@
             // 
             this.btAcquisStartStop.Enabled = false;
             this.btAcquisStartStop.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.btAcquisStartStop.Location = new System.Drawing.Point(52, 247);
+            this.btAcquisStartStop.Location = new System.Drawing.Point(120, 233);
             this.btAcquisStartStop.Name = "btAcquisStartStop";
             this.btAcquisStartStop.Size = new System.Drawing.Size(131, 23);
             this.btAcquisStartStop.TabIndex = 1;
@@ -237,9 +238,9 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(6, 59);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(37, 13);
+            this.label5.Size = new System.Drawing.Size(92, 13);
             this.label5.TabIndex = 33;
-            this.label5.Text = "Scans";
+            this.label5.Text = "Scans to Avarage";
             // 
             // txtBoxReceive
             // 
@@ -265,18 +266,6 @@
             // errorProvider4
             // 
             this.errorProvider4.ContainerControl = this;
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.Location = new System.Drawing.Point(251, 321);
-            this.progressBar1.Maximum = 2047;
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(593, 23);
-            this.progressBar1.TabIndex = 33;
-            // 
-            // timerProgress
-            // 
-            this.timerProgress.Tick += new System.EventHandler(this.timerProgress_Tick);
             // 
             // statusStrip1
             // 
@@ -324,20 +313,44 @@
             // 
             // timerSerialData
             // 
-            this.timerSerialData.Interval = 10;
+            this.timerSerialData.Interval = 1;
             this.timerSerialData.Tick += new System.EventHandler(this.timerSerial_Tick);
             // 
-            // timerPlot
+            // chkBoxRun
             // 
-            this.timerPlot.Tick += new System.EventHandler(this.timerPlot_Tick);
+            this.chkBoxRun.AutoSize = true;
+            this.chkBoxRun.Location = new System.Drawing.Point(18, 239);
+            this.chkBoxRun.Name = "chkBoxRun";
+            this.chkBoxRun.Size = new System.Drawing.Size(102, 17);
+            this.chkBoxRun.TabIndex = 35;
+            this.chkBoxRun.Text = "Continuous Run";
+            this.chkBoxRun.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.progressBar1);
+            this.groupBox2.Location = new System.Drawing.Point(18, 285);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(200, 51);
+            this.groupBox2.TabIndex = 36;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Communication Status";
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(12, 21);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(181, 23);
+            this.progressBar1.TabIndex = 1;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1000, 372);
+            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.chkBoxRun);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.txtBoxReceive);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox1);
@@ -359,6 +372,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider4)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -383,8 +397,6 @@
         private System.Windows.Forms.ErrorProvider errorProvider2;
         private System.Windows.Forms.ErrorProvider errorProvider3;
         private System.Windows.Forms.ErrorProvider errorProvider4;
-        private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Timer timerProgress;
         private System.Windows.Forms.TextBox txtBoxScan;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.StatusStrip statusStrip1;
@@ -396,7 +408,9 @@
         private System.Windows.Forms.TextBox txtChanNum;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Timer timerSerialData;
-        private System.Windows.Forms.Timer timerPlot;
+        private System.Windows.Forms.CheckBox chkBoxRun;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 
