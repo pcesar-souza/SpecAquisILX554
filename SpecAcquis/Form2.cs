@@ -18,15 +18,15 @@ namespace SpecAcquis
         const int CHANNEL = 2048;                                                           // default channels number
         const char iniChToken = '$';                                                        // Initial transmission token character
         const char finChToken = '#';                                                        // Final transmission token character
-        string RxString;
+        
         byte[] rxBuffer = new byte[1000000];
         UInt32 dIntTime, Scans;
         int IdxRecBuff = 0, buffCounter = 0;
         public int channel_Init = 0, channel_End = 0;
-        double chart_y;
-        UInt32 chart_x;
+        //double chart_y;
+        //UInt32 chart_x;
         double[] plotSignal = new double[4000];
-        Boolean Start_Graph = false, Make_Graph = false;
+        //Boolean Start_Graph = false, Make_Graph = false;
 
 
         public Form1()
@@ -41,14 +41,14 @@ namespace SpecAcquis
         private void button1_Click(object sender, EventArgs e)
         {
             txtBoxReceive.Clear();
-            chart1.Series["Series1"].Points.Clear();
+            if(!chkBoxRun.Checked) chart1.Series["Series1"].Points.Clear();
             chart1.ChartAreas[0].AxisX.Minimum = 0;
             chart1.ChartAreas[0].AxisX.Maximum = channel_End - 1;
             IdxRecBuff = 0;
             buffCounter = 0;
             progressBar1.Minimum = 0;
             progressBar1.Maximum = channel_End - 1;
-            chart_x = 0;
+            //chart_x = 0;
 
             // code for communication with uController... 
             if (btAcquisStartStop.Text == "START Acquisition")
@@ -57,7 +57,9 @@ namespace SpecAcquis
                
                 progressBar1.Value = 0;
                 
-                btAcquisStartStop.ForeColor = SystemColors.InactiveCaption;
+                //btAcquisStartStop.ForeColor = SystemColors.InactiveCaption;
+                btAcquisStartStop.ForeColor = SystemColors.Highlight;
+                btAcquisStartStop.ForeColor = Color.Red;
                 btAcquisStartStop.Text = "STOP Acquisition";
                 //btAcquisStartStop.Enabled = false;              // false upto receiving all data
                 if (serialPort.IsOpen == true)
@@ -68,21 +70,22 @@ namespace SpecAcquis
                     serialPort.Write("I" + dIntTime.ToString() + "\n");         //---- sends the detector integration time.
                     serialPort.Write("I" + Scans.ToString() + "\n");            //---- sends scan number.
 
-                    if(chkBoxRun.Checked) serialPort.Write("Y");                // if checkbox is okay then process 
-                    else serialPort.Write("Z");                                 // continuos run.
+                    //if(chkBoxRun.Checked) serialPort.Write("Y");                // if checkbox is okay then process 
+                    //else serialPort.Write("Z");                                 // continuos run.
 
                     serialPort.Write("P");                                      //---- tells uController to process controll data.
-                    Start_Graph = true;                                         // Graph only if it's true!
+                    //Start_Graph = true;                                         // Graph only if it's true!
                 }
             }
             else if (btAcquisStartStop.Text == "STOP Acquisition")
             {
                 timerSerialData.Stop();
-                Start_Graph = false;
+                //Start_Graph = false;
                 //if (chkBoxRun.Checked) chkBoxRun.Checked = false;
                 serialPort.Write("S" + "\n"); //stops acquisition
                 //serialcleaner();
-                btAcquisStartStop.ForeColor = Color.Blue;
+                btAcquisStartStop.ForeColor = SystemColors.Highlight;
+                //btAcquisStartStop.ForeColor = Color.Blue;
                 btAcquisStartStop.Text = "START Acquisition";
             }
         }                                                                       //end of button1_Click
@@ -90,10 +93,10 @@ namespace SpecAcquis
         //--------------------------------------------------------------------------------------------------------------
         private void updateCOMs()
         {
-            int i;
+            int i=0;
             bool changedPort; // Port change flag
 
-            i = 0;
+            //i = 0;
             changedPort = false;
             
             if (cmbPortBox1.Items.Count == SerialPort.GetPortNames().Length)    //if port number has changed...
@@ -124,10 +127,10 @@ namespace SpecAcquis
             }
 
             cmbPortBox1.SelectedIndex = 0;                                      // Points to the first in list
-        }                                                                       // End of updateCOMs()
+
+        }                                                                       //---------------- End of updateCOMs()
 
 
-       
         private void SerialCleaner()                                            // Clean everything on serial buffer
         {
             serialPort.ReadExisting();
@@ -194,6 +197,7 @@ namespace SpecAcquis
                 try
                 {
                     SerialCleaner();                                                // Clean everything on serial buffer
+                    serialPort.Write("S");                                          //------ send S to stop -------------
                     serialPort.Write("D");                                          //------ send D to disconnect -------------
                     serialPort.Close(); 
 
@@ -292,17 +296,12 @@ namespace SpecAcquis
             int idxPos1 = Array.IndexOf(tmp1Strings, iniChToken.ToString());                           // finds the occurance of initial transmission data token
             int idxPos2 = Array.IndexOf(tmp1Strings, finChToken.ToString());                           // finds the occurance of final transmission data token
 
-            txtBoxReceive.AppendText("idx1= "+idxPos1.ToString()+" idx2= "+idxPos2.ToString()+"\n");
+            //txtBoxReceive.AppendText("idx1= "+idxPos1.ToString()+" idx2= "+idxPos2.ToString()+"\n");
 
             if ((idxPos2 - idxPos1 - 1) == CHANNEL)
             {
                 Array.Copy(tmp1Strings, idxPos1 + 1, tmp2Strings, 0, CHANNEL);
-                /*if (pictureBox2.Image == SpecAcquis.Properties.Resources.on_img)
-                {
-                    pictureBox2.Image = SpecAcquis.Properties.Resources.off_img;
-                    //pictureBox3.Image = SpecAcquis.Properties.Resources.on_img;
-                    //Thread.Sleep(100);
-                } else pictureBox2.Image = SpecAcquis.Properties.Resources.on_img;*/
+                chart1.Series["Series1"].Points.Clear();
             }
             else
             {
@@ -310,21 +309,16 @@ namespace SpecAcquis
                 return;
             }
             
-            chart1.Series["Series1"].Points.Clear();
+            if(!chkBoxRun.Checked) btAcquisStartStop.ForeColor = SystemColors.Highlight; 
 
             for (int i = 0; i < channel_End; i++)
             {
-                //txtBoxReceive.AppendText("i= "+i.ToString()+" "+tmp2Strings[i]+"\n");
                 plotSignal[i] = Double.Parse(tmp2Strings[i]);
                 chart1.Series["Series1"].Points.AddXY(i, plotSignal[i]);               
             }
 
             Array.Clear(rxBuffer, 0, rxBuffer.Length);
-            //serialcleaner();
             
-            //btAcquisStartStop.Enabled = true;              // enable after receiving all data
-            //btAcquisStartStop.Text = "START Acquisition";
-            btAcquisStartStop.ForeColor = SystemColors.Highlight;
         }                                                                       // End of makePlot      
 
         static int searchByte(byte[] haystack,byte needle)
@@ -335,7 +329,13 @@ namespace SpecAcquis
 
             return success;
         }
-        
+
+        private void chkBoxRun_CheckedChanged(object sender, EventArgs e)
+        {
+            if(chkBoxRun.Checked) serialPort.Write("Y");                // if checkbox is okay then process 
+            else serialPort.Write("Z");                                 // continuos run.
+        }
+
         //----------------------------------------------------------------------------------------------------------------
         private void timerSerial_Tick(object sender, EventArgs e)               // Read data from serial port, poll every
         {                                                                       // 10ms. If data is there, read a block and write it to array
@@ -374,41 +374,15 @@ namespace SpecAcquis
                                                                                     // 124 ("|")               
                         if (succ>0)
                         {
-                            /*if (pictureBox2.Image == SpecAcquis.Properties.Resources.on_img)
-                            {
-                                pictureBox2.Image = SpecAcquis.Properties.Resources.off_img;
-                                pictureBox3.Image = SpecAcquis.Properties.Resources.on_img;
-                                //Thread.Sleep(100);
-                            }
-                            else
-                            {
-                                pictureBox2.Image = SpecAcquis.Properties.Resources.on_img;
-                                pictureBox3.Image = SpecAcquis.Properties.Resources.off_img;
-                                //Thread.Sleep(100);
-                            }*/
                             buffCounter += succ;
                             progressBar1.Value = buffCounter-3;
-                            progressBar1.PerformStep();
-                            //progBar();                            
+                            progressBar1.PerformStep();                      
                         }
-
-                        
 
                         Buffer.BlockCopy(      temp,             0,       rxBuffer,     IdxRecBuff,     bytestoread);
                         //     BlockCopy( Array src, int srcOffset, Array      dst, int  dstOffset, int count)                     
 
                         IdxRecBuff += bytestoread;                                  // updates array index 
-
-                        /*succ = searchByte(temp, 69);                                // assign to succ the numbers of "E" found
-                        if (succ > 0)
-                        {
-                            buffCounter = 0;
-                            IdxRecBuff = 0;
-                            timerSerialData.Stop();
-                            //return;
-                        }*/
-
-
                     }                                                                       // end of the second commport if...
                 }
 
@@ -420,22 +394,21 @@ namespace SpecAcquis
                     string s = System.Text.Encoding.UTF8.GetString(rxBuffer, 0, rxBuffer.Length);
                     int iniStrToken = s.IndexOf(iniChToken);                                // look up for the initial token character in transmission
                     int finStrToken = s.IndexOf(finChToken);                                // look up for the final token character in transmission
-                    //txtBoxReceive.AppendText("ini= "+iniStrToken.ToString()+"\n");
-                    //txtBoxReceive.AppendText("fin= " + finStrToken.ToString() + "\n");
+                    
                     if (iniStrToken < finStrToken) /*/s.IndexOf("E") != -1)*/                                   // if there´s "E" in the buffer, makePlot 
                     {
                         buffCounter = 0;
                         IdxRecBuff = 0;
-                        //if (!chkBoxRun.Checked) timerSerialData.Stop();         // not continuos run               
+                        if (!chkBoxRun.Checked)
+                        {
+                            timerSerialData.Stop();         // not continuos run 
+                            btAcquisStartStop.ForeColor = SystemColors.Highlight;
+                            btAcquisStartStop.Text = "START Acquisition";
+                        }
 
                         makePlot();                        
                     }                    
-                }
-                /*if (succ > 0)                               // search for array byte end delimiter                                                                                      
-                        {                                                           // 69 ("E")    
-                            buffCounter = 0;
-                            IdxRecBuff = 0;
-                        };*/      
+                }  
             }                                                                   // End of the first commport "if"  is open
         }                                                                       // End of timerSerial_Tick
 
@@ -446,14 +419,6 @@ namespace SpecAcquis
             // If all conditions have been met, clear the ErrorProvider of errors.
             errorProvider1.SetError(txtBoxITime, "");
         }
-
-        /*private void timerProgress_Tick(object sender, EventArgs e)
-        {
-            int percent = (int)(((double)progressBar1.Value / (double)progressBar1.Maximum) * 100);
-            progressBar1.CreateGraphics().DrawString(percent.ToString() + "%", new Font("Arial",
-                (float)10.0, FontStyle.Regular), Brushes.Black, new PointF(progressBar1.Width / 2 - 10, progressBar1.Height / 2 - 7));
-
-        }*/
 
         private void progBar()
         {

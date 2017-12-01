@@ -325,6 +325,7 @@
             this.chkBoxRun.TabIndex = 35;
             this.chkBoxRun.Text = "Continuous Run";
             this.chkBoxRun.UseVisualStyleBackColor = true;
+            this.chkBoxRun.CheckedChanged += new System.EventHandler(this.chkBoxRun_CheckedChanged);
             // 
             // groupBox2
             // 
