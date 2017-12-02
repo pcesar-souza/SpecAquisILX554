@@ -333,7 +333,7 @@ namespace SpecAcquis
         private void chkBoxRun_CheckedChanged(object sender, EventArgs e)
         {
             if(chkBoxRun.Checked) serialPort.Write("Y");                // if checkbox is okay then process 
-            else serialPort.Write("Z");                                 // continuos run.
+            else serialPort.Write("SZ");                                 // continuos run with "Y" on serial, else "Z".
         }
 
         //----------------------------------------------------------------------------------------------------------------
